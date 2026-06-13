@@ -17,7 +17,7 @@ ghqで管理するリポジトリをfzfで選び、そのディレクトリでGh
 
 - **モードがアプリを決める**:
   - ターミナル → Ghostty (`open -a Ghostty <path>`)
-  - Claude Code → cmux (`cmux claude-teams`、teams有効でClaude Codeを起動)
+  - Claude Code → cmux (`cmux new-workspace --cwd <path> --command "claude"` でワークスペースを作りClaude Codeを起動)
 - コマンドは3つ。`new` はモードを選ぶディスパッチャ。
 
 ## コマンド仕様
@@ -66,7 +66,7 @@ function new-term {
 function new-cc {
 	local dir
 	dir=$(smart-cmd-pick-repo) || return
-	(cd "$dir" && cmux claude-teams)
+	cmux new-workspace --cwd "$dir" --command "claude" --focus true
 }
 
 # new — モードをfzf選択して委譲
@@ -93,9 +93,11 @@ function new {
 
 ## 要検証ポイント（実装時に実機で確認）
 
-`(cd "$dir" && cmux claude-teams)` で **cmuxが当該ディレクトリのワークスペースを開いた上でClaude Codeを起動するか** を確認する。
+`cmux new-workspace --cwd "$dir" --command "claude" --focus true` を **cmux外のターミナル（Ghostty等）から実行したときに動作するか** を確認する。
 
-`cmux claude-teams` は引数をclaudeへ転送し、作業ディレクトリはcwd依存になる見込み。もしcwdがワークスペースに反映されない場合は、`cmux "$dir"`（ワークスペースを開く）→ claude起動 の2段構成に切り替える。GUI起動のため自動テストではなく手動で確認する。
+`new-workspace` のヘルプには "Create a new workspace in the caller's window"（ターゲットは `$CMUX_WORKSPACE_ID` / `$CMUX_SURFACE_ID`）とあり、cmux内からの呼び出しを前提にしている可能性がある。cmuxアプリ未起動・cmux外からの実行で期待通りワークスペースが作られClaude Codeが起動するかを手動で確認する。動作しない場合は `cmux "$dir"`（ワークスペースを開く／cmuxを起動）と組み合わせる方式に切り替える。
+
+`--command` の値は通常の `claude`。teams（実験的・cmux splits連携）を使いたい場合は `--command "cmux claude-teams"` に差し替える。GUI起動のため自動テストではなく手動で確認する。
 
 ## テスト方針
 
