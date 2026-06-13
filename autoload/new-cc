@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+# new-cc — ghqリポジトリをfzfで選び、cmuxの新規ワークスペースでClaude Codeを起動する。
+function new-cc {
+	local dir
+	dir=$(smart-cmd-pick-repo) || return
+	cmux new-workspace --cwd "$dir" --command "claude" --focus true
+}
