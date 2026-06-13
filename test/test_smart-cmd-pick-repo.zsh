@@ -10,20 +10,20 @@ ghq() {
 		root) print -- "/Users/test/ghq" ;;
 	esac
 }
-fzf() { print -- "github.com/foo/bar" }
+sk() { print -- "github.com/foo/bar" }
 
 local result
 result=$(smart-cmd-pick-repo)
 assert_eq "/Users/test/ghq/github.com/foo/bar" "$result" "選択リポジトリのフルパスを返す"
 
-# --- キャンセル系: fzfが非0なら非0で返す ---
-fzf() { return 130 }
+# --- キャンセル系: skが非0なら非0で返す ---
+sk() { return 130 }
 smart-cmd-pick-repo >/dev/null
-assert_eq 1 $? "fzfキャンセル時は非0で返す"
+assert_eq 1 $? "skキャンセル時は非0で返す"
 
 # --- 異常系: ghq root が失敗したら非0で返す（壊れたパスをechoしない） ---
 ghq() { [[ $1 == root ]] && return 1; print -l "github.com/foo/bar" }
-fzf() { print -- "github.com/foo/bar" }
+sk() { print -- "github.com/foo/bar" }
 local broken
 broken=$(smart-cmd-pick-repo)
 assert_eq 1 $? "ghq root失敗時は非0で返す"
