@@ -1,0 +1,10 @@
+#!/bin/zsh
+
+# smart-cmd-pick-repo — ghqリポジトリをfzfで選び、選択されたフルパスをechoする。
+# キャンセル/空選択のときは非0で返す（何もechoしない）。
+function smart-cmd-pick-repo {
+	local selected
+	selected=$(ghq list | fzf) || return 1
+	[[ -n $selected ]] || return 1
+	print -r -- "$(ghq root)/$selected"
+}
