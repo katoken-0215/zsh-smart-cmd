@@ -1,1 +1,14 @@
 # vim: ft=asciidoc
+
+== Repository launch commands
+
+ghq + fzf でリポジトリを選び、ターミナルまたは Claude Code で開く。
+
+new-term::
+    ghq リポジトリを fzf で選び、そのディレクトリで Ghostty を開く。
+
+new-cc::
+    ghq リポジトリを fzf で選び、cmux の新規ワークスペースで Claude Code を起動する。
+
+new::
+    fzf で `terminal (Ghostty)` / `claude-code (cmux)` を選び、new-term / new-cc に委譲する。
