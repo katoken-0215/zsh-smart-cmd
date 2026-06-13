@@ -21,4 +21,12 @@ fzf() { return 130 }
 smart-cmd-pick-repo >/dev/null
 assert_eq 1 $? "fzfキャンセル時は非0で返す"
 
+# --- 異常系: ghq root が失敗したら非0で返す（壊れたパスをechoしない） ---
+ghq() { [[ $1 == root ]] && return 1; print -l "github.com/foo/bar" }
+fzf() { print -- "github.com/foo/bar" }
+local broken
+broken=$(smart-cmd-pick-repo)
+assert_eq 1 $? "ghq root失敗時は非0で返す"
+assert_eq "" "$broken" "ghq root失敗時は何もechoしない"
+
 test_summary
