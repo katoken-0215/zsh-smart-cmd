@@ -1,11 +1,11 @@
 #!/bin/zsh
 
-# new — fzfで起動モードを選び、new-term / new-cc に委譲する。
+# new — skim (sk)で起動モードを選び、new-term / new-cc に委譲する。
 #   terminal (Ghostty)    → new-term
 #   claude-code (cmux)    → new-cc
 function new {
 	local choice
-	choice=$(print -l "terminal (Ghostty)" "claude-code (cmux)" | fzf) || return
+	choice=$(print -l "terminal (Ghostty)" "claude-code (cmux)" | sk) || return
 	case $choice in
 		terminal*)    new-term ;;
 		claude-code*) new-cc ;;
