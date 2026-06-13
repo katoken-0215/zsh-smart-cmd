@@ -5,4 +5,4 @@ fpath=(
 $fpath
 )
 
-autoload -Uz zsh_plugin
+autoload -Uz cc-haiku cc-sonnet cc-opus
