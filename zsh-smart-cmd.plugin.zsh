@@ -5,4 +5,5 @@ fpath=(
 $fpath
 )
 
-autoload -Uz cc-haiku cc-sonnet cc-opus new new-term new-cc smart-cmd-pick-repo smart-history
+autoload -Uz cc-haiku cc-sonnet cc-opus new new-term new-cc smart-cmd-pick-repo
+autoload +X smart-history

@@ -1,9 +1,6 @@
 #!/bin/zsh
 
 function smart-history {
-	BUFFER=$(history -n -r 1 | sk --no-sort --query "$LBUFFER" -e | tr '\\n' '\n')
+	BUFFER=$(history -n -r 1 | sk --no-sort --query "$LBUFFER" -e | sed $'s/\\\\n/\\\n/g')
 	CURSOR=$#BUFFER
 }
-
-zle -N smart-history
-bindkey "^R" smart-history
