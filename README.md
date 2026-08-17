@@ -34,6 +34,11 @@
 ```toml
 [plugins.zsh-smart-cmd]
 github = "katoken-0215/zsh-smart-cmd"
+
+[plugins.zsh-smart-cmd.hooks]
+post = """
+zle -N smart-history
+bindkey "^R" smart-history
 ```
 
 エントリポイントは `zsh-smart-cmd.plugin.zsh` なので、sheldon のデフォルトのマッチで自動的に読み込まれる。
