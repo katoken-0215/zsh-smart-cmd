@@ -1,6 +1,6 @@
 # zsh-smart-cmd
 
-ghq + skim (`sk`) でリポジトリを選び、ターミナルや Claude Code を素早く起動する zsh コマンド集。
+リポジトリの選択・起動や開発ツールのキャッシュ削除を素早く実行する zsh コマンド集。
 
 ## コマンド
 
@@ -10,13 +10,22 @@ ghq + skim (`sk`) でリポジトリを選び、ターミナルや Claude Code �
 | `new-term` | ghq リポジトリを選び、そのディレクトリで Ghostty を開く。 |
 | `new-cc` | ghq リポジトリを選び、cmux の新規ワークスペースで Claude Code を起動する。 |
 | `cc-haiku` / `cc-sonnet` / `cc-opus` | 指定モデルで Claude Code を起動する。 |
+| `clear-cache` | インストール済みの開発ツールを検出し、キャッシュや未使用リソースを一括削除する。 |
 | `smart-cmd-pick-repo` | ghq リポジトリを選び、フルパスを出力する（他コマンドの内部利用）。 |
 
 ## 依存
 
-- [ghq](https://github.com/x-motemen/ghq)
-- [skim (`sk`)](https://github.com/skim-rs/skim)
-- `new-term`: [Ghostty](https://ghostty.org/) / `new-cc`: cmux
+- `new` / `new-term` / `new-cc`: [ghq](https://github.com/x-motemen/ghq)、[skim (`sk`)](https://github.com/skim-rs/skim)
+- `new-term`: [Ghostty](https://ghostty.org/)
+- `new-cc`: cmux
+- `clear-cache`: 必須の外部ツールなし。pip、uvx (ruff)、uv、npm、pnpm、pre-commit、prek、mise、Homebrew、Docker のうち、インストール済みのものだけを処理する。
+
+### `clear-cache` の注意事項
+
+`clear-cache` は pip / ruff / uv / npm / pnpm / pre-commit / prek / mise / Homebrew / node-gyp / Docker のキャッシュまたは未使用リソースを対象とする。
+
+> [!WARNING]
+> `clear-cache` は確認プロンプトを表示せず、検出した対象を直ちに削除する。Docker では `docker system prune -f` を実行するが、名前付きボリュームは削除しない。
 
 ## インストール
 
