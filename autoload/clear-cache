@@ -35,6 +35,7 @@ function clear-cache {
 		if check-command npm; then
 			log "Clearing npm cache..."
 			npm cache clean --force
+			npm cache npx rm --force
 		fi
 		# pnpm
 		if check-command pnpm; then
@@ -49,7 +50,7 @@ function clear-cache {
 		# pre-commit
 		if check-command pre-commit; then
 			log "Clearing pre-commit cache..."
-			pre-commit gc
+			pre-commit clean
 		fi
 		# prek
 		if check-command prek; then
