@@ -1,0 +1,8 @@
+#!/bin/zsh
+
+# new-term — ghqリポジトリをskim (sk)で選び、そのディレクトリでGhosttyを開く。
+function new-term {
+	local dir
+	dir=$(smart-cmd-pick-repo) || return
+	open -a Ghostty "$dir"
+}

@@ -1,0 +1,82 @@
+#!/bin/zsh
+
+function clear-cache {
+	(
+		# サブシェル内だけで使うため、呼び出し元の関数を汚染しない。
+		function check-command() {
+			command -v "$1" >/dev/null 2>&1
+		}
+
+		function log() {
+			echo '[clear-cache]' "$1" >&2
+		}
+
+		# pip
+		if check-command pip; then
+			log "Clearing pip cache..."
+			pip cache purge
+		fi
+		# ruff
+		if check-command uvx; then
+			log "Clearing ruff cache..."
+			uvx ruff clean
+		fi
+		# uv
+		if check-command uv; then
+			log "Clearing uv cache..."
+			# --force は新しい uv だけがサポートする。
+			if uv cache clean --help 2>/dev/null | grep -q -- '--force'; then
+				uv cache clean --force
+			else
+				uv cache clean
+			fi
+		fi
+		# npm
+		if check-command npm; then
+			log "Clearing npm cache..."
+			npm cache clean --force
+		fi
+		# pnpm
+		if check-command pnpm; then
+			log "Clearing pnpm store..."
+			pnpm store prune
+			# metadata cache は新しい pnpm だけがサポートする。
+			if pnpm cache --help >/dev/null 2>&1; then
+				log "Clearing pnpm metadata cache..."
+				pnpm cache delete '*'
+			fi
+		fi
+		# pre-commit
+		if check-command pre-commit; then
+			log "Clearing pre-commit cache..."
+			pre-commit gc
+		fi
+		# prek
+		if check-command prek; then
+			log "Clearing prek cache..."
+			prek gc
+		fi
+		# mise
+		if check-command mise; then
+			log "Clearing mise cache..."
+			mise cache prune
+			log "Pruning unused mise tool versions..."
+			mise prune -y
+		fi
+		# Homebrew
+		if check-command brew; then
+			log "Clearing Homebrew cache..."
+			brew cleanup -s
+		fi
+		# node-gyp の専用コマンドはないため、macOS のキャッシュを直接削除する。
+		if [[ -d "$HOME/Library/Caches/node-gyp" ]]; then
+			log "Clearing node-gyp cache..."
+			rm -rf "$HOME/Library/Caches/node-gyp"
+		fi
+		# 名前付きボリュームは削除しない。
+		if check-command docker; then
+			log "Clearing Docker cache..."
+			docker system prune -f
+		fi
+	)
+}
