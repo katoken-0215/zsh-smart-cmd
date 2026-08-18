@@ -35,6 +35,7 @@ function clear-cache {
 		if check-command npm; then
 			log "Clearing npm cache..."
 			npm cache clean --force
+			npm cache npx rm --force
 		fi
 		# pnpm
 		if check-command pnpm; then
