@@ -50,7 +50,7 @@ function clear-cache {
 		# pre-commit
 		if check-command pre-commit; then
 			log "Clearing pre-commit cache..."
-			pre-commit gc
+			pre-commit clean
 		fi
 		# prek
 		if check-command prek; then
