@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-function cc-haiku {
+function cl-haiku {
 	claude --model haiku "$@"
 }

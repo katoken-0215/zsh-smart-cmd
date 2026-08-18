@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-function cc-sonnet {
+function cl-sonnet {
 	claude --model sonnet "$@"
 }
