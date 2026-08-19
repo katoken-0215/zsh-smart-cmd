@@ -1,5 +1,5 @@
 #!/bin/zsh
 
-function cc-opus {
+function cl-opus {
 	claude --model opus "$@"
 }
