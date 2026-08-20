@@ -42,19 +42,30 @@ prek() { record_call "prek $*" }
 mise() { record_call "mise $*" }
 brew() { record_call "brew $*" }
 rm() { record_call "rm $*" }
-docker() { record_call "docker $*" }
+docker() {
+	if [[ "$*" == "info" ]]; then
+		return 0
+	fi
+	record_call "docker $*"
+}
+rdctl() {
+	if [[ "$*" == "shell true" ]]; then
+		return 0
+	fi
+	record_call "rdctl $*"
+}
 
 clear-cache 2> "$stderr_log"
 
-expected_calls=$'pip cache purge\nuvx ruff clean\nuv cache clean --force\nnpm cache clean --force\npnpm store prune\npnpm cache delete *\npre-commit gc\nprek gc\nmise cache prune\nmise prune -y\nbrew cleanup -s\nrm -rf '"$test_home"$'/Library/Caches/node-gyp\ndocker system prune -f'
+expected_calls=$'pip cache purge\nuvx ruff clean\nuv cache clean --force\nnpm cache clean --force\npnpm store prune\npnpm cache delete *\npre-commit gc\nprek gc\nmise cache prune\nmise prune -y\nbrew cleanup -s\nrm -rf '"$test_home"$'/Library/Caches/node-gyp\ndocker system prune -f\ndocker builder prune -af\nrdctl shell sudo fstrim -v /mnt/data'
 assert_eq "$expected_calls" "$(<"$CALL_LOG")" "全ツールへ安全化済みの引数を渡す"
 
-expected_stderr=$'[clear-cache] Clearing pip cache...\n[clear-cache] Clearing ruff cache...\n[clear-cache] Clearing uv cache...\n[clear-cache] Clearing npm cache...\n[clear-cache] Clearing pnpm store...\n[clear-cache] Clearing pnpm metadata cache...\n[clear-cache] Clearing pre-commit cache...\n[clear-cache] Clearing prek cache...\n[clear-cache] Clearing mise cache...\n[clear-cache] Pruning unused mise tool versions...\n[clear-cache] Clearing Homebrew cache...\n[clear-cache] Clearing node-gyp cache...\n[clear-cache] Clearing Docker cache...'
+expected_stderr=$'[clear-cache] Clearing pip cache...\n[clear-cache] Clearing ruff cache...\n[clear-cache] Clearing uv cache...\n[clear-cache] Clearing npm cache...\n[clear-cache] Clearing pnpm store...\n[clear-cache] Clearing pnpm metadata cache...\n[clear-cache] Clearing pre-commit cache...\n[clear-cache] Clearing prek cache...\n[clear-cache] Clearing mise cache...\n[clear-cache] Pruning unused mise tool versions...\n[clear-cache] Clearing Homebrew cache...\n[clear-cache] Clearing node-gyp cache...\n[clear-cache] Clearing Docker cache...\n[clear-cache] Clearing Docker build cache...\n[clear-cache] Trimming Rancher Desktop VM disk...'
 assert_eq "$expected_stderr" "$(<"$stderr_log")" "進捗ログを stderr へ出力する"
 assert_eq "0" "${+functions[check-command]}" "内部 check-command を残さない"
 assert_eq "0" "${+functions[log]}" "内部 log を残さない"
 
-unfunction pip uvx uv grep npm pnpm pre-commit prek mise brew rm docker
+unfunction pip uvx uv grep npm pnpm pre-commit prek mise brew rm docker rdctl
 PATH=$original_path
 command rm -rf "$test_home/Library"
 PATH=/nonexistent
@@ -88,6 +99,28 @@ pnpm() {
 clear-cache 2> /dev/null
 assert_eq "pnpm store prune" "$(<"$CALL_LOG")" "古い pnpm では metadata 削除をスキップする"
 unfunction pnpm
+
+# --- Docker デーモンと Rancher Desktop の VM が停止中でもスキップして続行する ---
+: > "$CALL_LOG"
+: > "$stderr_log"
+docker() {
+	if [[ "$*" == "info" ]]; then
+		return 1
+	fi
+	record_call "docker $*"
+}
+rdctl() {
+	if [[ "$*" == "shell true" ]]; then
+		return 1
+	fi
+	record_call "rdctl $*"
+}
+npm() { record_call "npm $*" }
+clear-cache 2> "$stderr_log"
+assert_eq "npm cache clean --force" "$(<"$CALL_LOG")" "停止中は prune も fstrim も実行せず他ツールは処理する"
+expected_stderr=$'[clear-cache] Clearing npm cache...\n[clear-cache] Skipping Docker cache: daemon is not running.\n[clear-cache] Skipping Rancher Desktop trim: VM is not running.'
+assert_eq "$expected_stderr" "$(<"$stderr_log")" "スキップした理由をログに出す"
+unfunction docker rdctl npm
 
 # --- ツールも node-gyp ディレクトリもなければ何もしない ---
 : > "$CALL_LOG"

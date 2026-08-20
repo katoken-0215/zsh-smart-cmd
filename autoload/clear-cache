@@ -75,9 +75,29 @@ function clear-cache {
 			rm -rf "$HOME/Library/Caches/node-gyp"
 		fi
 		# 名前付きボリュームは削除しない。
+		# デーモンが起動していないと prune が待たされるため、疎通を確認してから実行する。
 		if check-command docker; then
-			log "Clearing Docker cache..."
-			docker system prune -f
+			if docker info >/dev/null 2>&1; then
+				log "Clearing Docker cache..."
+				docker system prune -f
+				# system prune はダングリング分しか消さないため、ビルドキャッシュは別途全削除する。
+				log "Clearing Docker build cache..."
+				docker builder prune -af
+			else
+				log "Skipping Docker cache: daemon is not running."
+			fi
+		fi
+		# Rancher Desktop の VM ディスクはスパースファイルで自動収縮せず、
+		# VM 内で消しただけではホストの空き容量が増えない。fstrim で解放領域をホストへ返す。
+		# VM は BusyBox なので -a は使えず、実データのある /mnt/data を明示する（/ は tmpfs）。
+		# VM 停止中は rdctl shell がエラーになるため、疎通を確認してから実行する。
+		if check-command rdctl; then
+			if rdctl shell true >/dev/null 2>&1; then
+				log "Trimming Rancher Desktop VM disk..."
+				rdctl shell sudo fstrim -v /mnt/data
+			else
+				log "Skipping Rancher Desktop trim: VM is not running."
+			fi
 		fi
 	)
 }
