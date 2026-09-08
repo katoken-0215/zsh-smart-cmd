@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+function cl-opus-max {
+	claude --model opus --effort max "$@"
+}

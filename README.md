@@ -9,7 +9,9 @@
 | `new` | 起動モード（terminal / claude-code）を選び、`new-term` / `new-cc` に委譲する。 |
 | `new-term` | ghq リポジトリを選び、そのディレクトリで Ghostty を開く。 |
 | `new-cc` | ghq リポジトリを選び、cmux の新規ワークスペースで Claude Code を起動する。 |
-| `cc-haiku` / `cc-sonnet` / `cc-opus` | 指定モデルで Claude Code を起動する。 |
+| `cl` | Claude Code を起動する。 |
+| `cl-haiku` / `cl-sonnet` / `cl-opus` | 指定モデルで Claude Code を起動する（`cl-opus` は effort=medium 固定）。 |
+| `cl-opus-high` / `cl-opus-xhigh` / `cl-opus-max` | opus をそれぞれ effort=high / xhigh / max で起動する。 |
 | `clear-cache` | インストール済みの開発ツールを検出し、キャッシュや未使用リソースを一括削除する。 |
 | `smart-cmd-pick-repo` | ghq リポジトリを選び、フルパスを出力する（他コマンドの内部利用）。 |
 
