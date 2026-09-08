@@ -1,0 +1,5 @@
+#!/bin/zsh
+
+function cl-opus-xhigh {
+	claude --model opus --effort xhigh "$@"
+}

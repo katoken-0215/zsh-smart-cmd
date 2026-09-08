@@ -1,5 +1,5 @@
 #!/bin/zsh
 
 function cl-opus {
-	claude --model opus "$@"
+	claude --model opus --effort medium "$@"
 }
